@@ -3,6 +3,7 @@ package main
 import (
 	"gocv.io/x/gocv"
 	"image"
+	"image/color"
 	"math"
 )
 
@@ -21,10 +22,10 @@ func main() {
 	tranformed_window := gocv.NewWindow("Transformed")
 
 	origImg := []image.Point{
-		image.Point{128, 165}, // top-left
-		image.Point{215, 275}, // bottom-left
-		image.Point{385, 128}, // bottom-right
-		image.Point{300, 40},  // top-right
+		{352, 32},  // top-left
+		{265, 294}, // bottom-left
+		{660, 272}, // bottom-right
+		{468, 24},  // top-right
 	}
 
 	heightA := math.Sqrt(math.Pow(float64(origImg[0].X-origImg[1].X), 2) + math.Pow(float64(origImg[0].Y-origImg[1].Y), 2))
@@ -36,14 +37,20 @@ func main() {
 	width := int(math.Max(widthA, widthB))
 
 	newImg := gocv.NewPointVectorFromPoints([]image.Point{
-		image.Point{0, 0},
-		image.Point{0, height},
-		image.Point{width, height},
-		image.Point{width, 0},
+		{0, 0},
+		{0, height},
+		{width, height},
+		{width, 0},
 	})
 
 	for {
+
 		video.Read(&mat)
+
+		for _, point := range origImg {
+			createCircles(&mat, point)
+		}
+
 		window.IMShow(mat)
 		transform := gocv.GetPerspectiveTransform(gocv.NewPointVectorFromPoints(origImg), newImg)
 		perspective := gocv.NewMat()
@@ -53,4 +60,8 @@ func main() {
 		window.WaitKey(1)
 	}
 
+}
+
+func createCircles(mat *gocv.Mat, point image.Point) {
+	gocv.Circle(mat, point, 2, color.RGBA{R: 255}, 2)
 }
