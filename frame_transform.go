@@ -8,13 +8,18 @@ import (
 
 func main() {
 
-	img := gocv.IMRead("./asset/pic.jpg", gocv.IMReadAnyColor)
+	img := gocv.IMRead("./asset/road.png", gocv.IMReadAnyColor)
+	//Line
+	/*	start := image.Point{447, 1017}
+		end := image.Point{444, 1473}
+
+		gocv.Line(&img, start, end, color.RGBA{255, 0, 0, 0}, 2)*/
 
 	origImg := []image.Point{
-		{539, 917},  // top-left
-		{221, 1237}, // bottom-left
-		{517, 1551}, // bottom-right
-		{821, 1143}, // top-right
+		{377, 53},   // top-left
+		{35, 679},   // bottom-left
+		{1863, 677}, // bottom-right
+		{1601, 53},  // top-right
 	}
 
 	heightA := math.Sqrt(math.Pow(float64(origImg[0].X-origImg[1].X), 2) + math.Pow(float64(origImg[0].Y-origImg[1].Y), 2))
@@ -35,6 +40,31 @@ func main() {
 	transform := gocv.GetPerspectiveTransform(gocv.NewPointVectorFromPoints(origImg), newImg)
 	perspective := gocv.NewMat()
 	gocv.WarpPerspective(img, &perspective, transform, image.Point{width, height})
+
+	// Draw the line on the image
+
+	//fmt.Println("Distance: ", distance(start, end))
+
+	/*	gocv.Line(&perspective, image.Point{
+			X: 0,
+			Y: 0,
+		}, image.Point{
+			X: 431,
+			Y: 0,
+		}, color.RGBA{0, 255, 0, 0}, 2)
+		fmt.Println("Distance: ", distance(image.Point{
+			X: 0,
+			Y: 0,
+		}, image.Point{
+			X: 431,
+			Y: 0,
+		}))*/
 	gocv.IMWrite("transformed.jpg", perspective)
 
+}
+
+func distance(p1, p2 image.Point) float64 {
+	dx := p2.X - p1.X
+	dy := p2.Y - p1.Y
+	return math.Sqrt(float64(dx*dx + dy*dy))
 }
